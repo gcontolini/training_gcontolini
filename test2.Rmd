@@ -45,4 +45,10 @@ ggplot(bg_chem, aes(x = P, y = (NO2 + NO3 + NH4))) +
 
 The Redfield ratio is `r round(ratio, 2)`. 
 
+git remote add origin https://github.com/gcontolini/training_gcontolini.git
+* this is where the repo lives
+git branch -M main
+* "name" of the primary branch
+git push -u origin main
+* special push of an untracked branch
 
