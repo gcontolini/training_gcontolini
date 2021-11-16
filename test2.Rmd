@@ -1,0 +1,48 @@
+---
+title: "test2"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#### load packages ####
+library(readr) # it is already on the server
+library(ggplot2)
+```
+
+#Introduction
+
+ - read in data
+```{r}
+bg_chem = read_csv('data/BGchem2008data.csv') # push tab to autocomplete the file path!
+
+ 
+```
+# Analysis
+
+ - calculate summary stats
+ - calculate mean Redfield ratio
+ - plot Redfield ratio
+ 
+```{r analysis}
+# calculate summary statistics
+nitrate <- mean(bg_chem$NO3) # $ is actually the "list selector" operator
+nitrite <- mean(bg_chem$NO2)
+amm <- mean(bg_chem$NH4)
+phos <- mean(bg_chem$P)
+
+# Calculate mean Redfield ratio
+ratio = (nitrate + nitrite + amm) / phos
+
+# plot Redfield ratio
+ggplot(bg_chem, aes(x = P, y = (NO2 + NO3 + NH4))) +
+  geom_point() + 
+  labs(x = 'Phosphorus (units)', y = 'Total nitrate (units)') 
+```
+
+The Redfield ratio is `r round(ratio, 2)`. 
+
+

@@ -1,0 +1,62 @@
+---
+title: "test1"
+output: html_document
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("ggplot2")
+```
+
+## Second level header
+
+### Third level header
+
+plain paragraph all on the same line
+
+List of fruits
+
+-   apple
+-   kiwi
+-   mango
+-   coconut
+
+*Nereocystis luetkeana* is a large brown algae endemic to the Eastern Pacific ocean.
+
+Here are some fun facts about *Nereocystis luetkeana*:
+
+1.  common name is bull kelp
+2.  it can grow over 100 ft tall
+3.  it contains carbon monoxide to help it float
+4.  these numbers don't have to be in order but they will knit in order!
+
+## Here is an important header
+
+### and a smaller header
+
+#### a smaller subheader for this equation
+
+$$\sum x_n +3$$ <!--- it is centered with the double $$-->
+
+Table 1. Example table 1.
+
+| Col1 | Col2 | Col3 |
+|------|------|------|
+| w    | w    | w    |
+| w    | w    | w    |
+| w    | w    | w    |
+
+Insert a new chunk uding the green square insert chunk icon [@oke2020]. There's also the keyboard shortcut, cmd+opt+i. 
+
+```{r}
+x = 2 + 2
+y = x*3
+
+```
+The green arrow runs the entire chunk. Cmd + return just runs the line you're on (or the whole function you're doing)
+
+```{r}
+
+
+```
