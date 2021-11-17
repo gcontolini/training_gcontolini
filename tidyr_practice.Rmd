@@ -46,11 +46,14 @@ catch.long <- catch.clean %>%
 # Other fun functions
 catch.wide <- catch.long %>%
   pivot_wider(names_from = 'Region', values_from = 'catch_thousands') # it's a table that is 20 cols wide.
+
+
 ```
 
 # Join catch data to region data
 ## Split, apply, combine
 ```{r}
+#### Split and apply ####
 catch.long %>% # want to know mean catch across all spp and all years.
   filter(Year > 1899) %>% # filters rows
   group_by(Region, species) %>% #col names over which you want to group
@@ -59,6 +62,17 @@ catch.long %>% # want to know mean catch across all spp and all years.
 
 # sometimes the data summarized here remain grouped and that can trip you up later.
 # you can override this using the '.groups' argument
+
+#### 
+region.defs <-  read.csv('https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1')  %>% # region code table
+  rename(Region = code)
+
+catch.joined <- left_join(catch.long, region.defs, by = 'Region')
+# other join options are 
+## inner_join
+## right_join
+## merge (from base R)
+
 
 ```
 

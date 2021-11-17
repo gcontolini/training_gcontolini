@@ -204,7 +204,8 @@ catch.wide &lt;- catch.long %&gt;%
 <h1>Join catch data to region data</h1>
 <div id="split-apply-combine" class="section level2">
 <h2>Split, apply, combine</h2>
-<pre class="r"><code>catch.long %&gt;% # want to know mean catch across all spp and all years.
+<pre class="r"><code>#### Split and apply ####
+catch.long %&gt;% # want to know mean catch across all spp and all years.
   filter(Year &gt; 1899) %&gt;% # filters rows
   group_by(Region, species) %&gt;% #col names over which you want to group
   summarise(catch_mean = mean(catch_thousands), sd = sd(catch_thousands), n = n(), .groups = &#39;drop&#39;) %&gt;% # apply and combine. for sample size, you don&#39;t have to put anything in the function n(). 
@@ -224,7 +225,17 @@ catch.wide &lt;- catch.long %&gt;%
 ## 10 KOD    Sockeye      1694.  1304.    98
 ## # … with 80 more rows</code></pre>
 <pre class="r"><code># sometimes the data summarized here remain grouped and that can trip you up later.
-# you can override this using the &#39;.groups&#39; argument</code></pre>
+# you can override this using the &#39;.groups&#39; argument
+
+#### 
+region.defs &lt;-  read.csv(&#39;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1&#39;)  %&gt;% # region code table
+  rename(Region = code)
+
+catch.joined &lt;- left_join(catch.long, region.defs, by = &#39;Region&#39;)
+# other join options are 
+## inner_join
+## right_join
+## merge (from base R)</code></pre>
 </div>
 </div>
 
