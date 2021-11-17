@@ -1,0 +1,54 @@
+---
+title: "data_vis_training"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load libraries}
+library(leaflet)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(DT)
+library(scales)
+```
+
+```{r}
+data_url <- "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3Af119a05b-bbe7-4aea-93c6-85434dcb1c5e"
+
+esc <- tryCatch(
+    read.csv("data/escapement.csv"),
+    error=function(cond) {
+        message(paste("Escapement file does not seem to exist, so get it from the KNB."))
+        esc <- read.csv(url(data_url, method = "libcurl"))
+        return(esc)
+    }
+)
+# read from url but if not use a file you have saved on harddrive
+head(esc)
+```
+
+Challenge: calculate annual escapement by species and region
+```{r}
+annual.esc <-  esc %>%
+  separate(sampleDate, into = c('year','month','day'), sep = '-') %>%
+  mutate(year = as.numeric(year)) %>%
+  filter(Species %in% c('Chinook','Sockeye','Chum','Pink','Coho')) %>%
+  group_by(year, SASAP.Region,Species) %>%
+  summarise(annual_esc = sum(DailyCount))
+
+str(annual.esc)
+head(annual.esc)
+```
+
+Create tidy plot!
+```{r create tidy plot}
+ggplot(annual.esc, aes(x = year, y = annual_esc, color = Species)) +
+  geom_point(position=position_dodge(1)) +
+  geom_line(position=position_dodge(1))
+
