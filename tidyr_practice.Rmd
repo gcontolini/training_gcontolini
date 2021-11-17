@@ -1,0 +1,64 @@
+---
+title: "tidyr_practice"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = FALSE}
+library(tidyr)
+library(dplyr)
+library(readr)
+```
+
+# Load in data
+Data are from [Mike Byerly. Alaska commercial salmon catches by management region (1886- 1997). Gulf of Alaska Data Portal. df35b.304.2.](https://knb.ecoinformatics.org/view/df35b.304.2)
+```{r load in data, message = FALSE}
+catch.original <- read.csv('https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1') # catch data from knb site
+```
+
+# Clean and reshape data
+
+* Drop "notesRegCode" and "all" columns
+* Change Chinook column to type numeric
+* Change Chinook NA values to 1
+```{r clean and reshape data, warning = FALSE}
+catch.clean = catch.original %>%
+  select(-notesRegCode, -All) %>% # remove unnecessary cols
+  mutate(Chinook = as.numeric(Chinook)) %>% # change Chinook to type numeric
+  mutate(Chinook = if_else(is.na(Chinook), 1, Chinook)) # change Chinook NA to 1
+
+catch.long <- catch.clean %>%
+  pivot_longer(cols = -c(Region, Year), names_to = "species", values_to = "catch") %>%
+  rename(catch_thousands = catch) # new col name first
+
+# Do not pivot over Region and Year
+# names_to references the col names we're pivoting over AKA the new derived col name
+## used to be called melt and cast, and gather and spread. pivot_longer came out less than 2 yrs ago. New functions come out way too often. 
+#~*~*~ In other words ~*~*~#
+# names_to is the col names you want to be in one new col. 
+# values_to is the cell value you want to be in one new col.
+
+# Other fun functions
+catch.wide <- catch.long %>%
+  pivot_wider(names_from = 'Region', values_from = 'catch_thousands') # it's a table that is 20 cols wide.
+```
+
+# Join catch data to region data
+## Split, apply, combine
+```{r}
+catch.long %>% # want to know mean catch across all spp and all years.
+  filter(Year > 1899) %>% # filters rows
+  group_by(Region, species) %>% #col names over which you want to group
+  summarise(catch_mean = mean(catch_thousands), sd = sd(catch_thousands), n = n(), .groups = 'drop') %>% # apply and combine. for sample size, you don't have to put anything in the function n(). 
+  arrange(-catch_mean) # the minus sign reverses the order of the arrange.
+
+# sometimes the data summarized here remain grouped and that can trip you up later.
+# you can override this using the '.groups' argument
+
+```
+
