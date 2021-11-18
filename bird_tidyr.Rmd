@@ -1,0 +1,31 @@
+---
+title: "bird_tidyr"
+author: "gina c"
+date: "11/18/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+library(readr)
+library(dplyr)
+library(janitor)
+```
+
+# Read in from website
+
+```{r}
+webpage <- read_html("https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm")
+
+tbls <- html_nodes(webpage, "table") %>% # pull out all nodes called table
+    html_table(fill = TRUE) # turns it into a list
+
+species <- tbls[[1]] %>% 
+    clean_names() %>% # now col names have no spaces and no special chars
+    select(alpha_code, common_name) %>% # select two cols
+    mutate(alpha_code = tolower(alpha_code)) # turns everything into lowercase
+```
+
