@@ -9,13 +9,14 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load libraries}
+```{r load libraries, message = FALSE}
 library(leaflet)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(DT)
 library(scales)
+source('ggplot.theme.original.R')
 ```
 
 ```{r}
@@ -30,7 +31,6 @@ esc <- tryCatch(
     }
 )
 # read from url but if not use a file you have saved on harddrive
-head(esc)
 ```
 
 Challenge: calculate annual escapement by species and region
@@ -42,8 +42,6 @@ annual.esc <-  esc %>%
   group_by(year, SASAP.Region,Species) %>%
   summarise(annual_esc = sum(DailyCount))
 
-str(annual.esc)
-head(annual.esc)
 ```
 
 Create tidy plot!
@@ -52,7 +50,15 @@ ggplot(annual.esc, aes(x = year, y = annual_esc, color = Species)) +
   geom_point(position=position_dodge(1)) +
   geom_line(position=position_dodge(1)) +
   labs(y = 'Number of escaped salmon') +
-  theme_classic()
+  my.theme
 
-ggplot()
+ggplot(annual.esc %>% filter(Species == 'Sockeye'), aes(x = year, y = annual_esc)) +
+  geom_point() +
+  geom_line() +
+  my.theme
+
+# Other cool ggplot like packages
+## ggmarginal for adding plots to your plot margins
+## ggridges for density plots
+
 ```
