@@ -8,3 +8,7 @@ no more conflicts!
 Let's add some important information. 
 
 This branch makes maps.
+
+```{r}
+library(lattice)
+```
