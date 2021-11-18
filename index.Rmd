@@ -8,6 +8,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 # Check out my other pages
 
-[Data Analysis](tidyr_practice.html)
+[Tidyr practice](tidyr_practice.html)
 
-[Data visualization](data_vis_training.Rmd)
+[Data visualization practice](data_vis_training.Rmd)
