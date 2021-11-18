@@ -62,3 +62,33 @@ ggplot(annual.esc %>% filter(Species == 'Sockeye'), aes(x = year, y = annual_esc
 ## ggridges for density plots
 
 ```
+
+# Leaflet Maps
+```{r}
+locs <- esc %>%
+  distinct(Location, Latitude, Longitude) %>% # selects only unique rows from a dataframe.
+  drop_na() # removes all NA rows. It is quite an aggressive function.
+
+leaflet(locs) %>%
+  addTiles() %>%
+  addMarkers(lng = ~Longitude, lat = ~Latitude, popup = ~Location) # uses R model syntax
+## HOLY COW THAT IS A MAP
+
+leaflet(locs) %>% 
+  addWMSTiles("https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?", # this is the imagery tiles
+              layers = 'GEBCO_LATEST',
+              attribution = "Imagery reproduced from the GEBCO_2014 Grid, version 20150318, www.gebco.net") %>%
+  addCircleMarkers(lng = ~Longitude,
+                   lat = ~Latitude,
+                   popup = ~ Location,
+                   radius = 5,
+                   # set fill properties
+                   fillColor = "salmon",
+                   fillOpacity = 1,
+                   # set stroke properties
+                   stroke = T,
+                   weight = 0.5,
+                   color = "white",
+                   opacity = 1)
+```
+
