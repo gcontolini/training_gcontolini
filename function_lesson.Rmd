@@ -1,0 +1,32 @@
+---
+title: "function_lesson"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Create Farenheit to Celsius function
+```{r}
+airtemps = c(212, 30.3, 78, 32)
+FtoC = function(fahr) { 
+  celsius <- (fahr-32) * (5/9)
+  return(celsius)
+}
+# test the function
+airtemps_C = FtoC(airtemps)
+```
+
+# Create Celsius to Farenheit function
+```{r}
+CtoF <- function(celsius) {
+  farenheit <- celsius * (9/5) +32
+  return(farenheit)
+}
+# test the function
+CtoF(airtemps_C)
+```
+
