@@ -50,5 +50,9 @@ Create tidy plot!
 ```{r create tidy plot}
 ggplot(annual.esc, aes(x = year, y = annual_esc, color = Species)) +
   geom_point(position=position_dodge(1)) +
-  geom_line(position=position_dodge(1))
+  geom_line(position=position_dodge(1)) +
+  labs(y = 'Number of escaped salmon') +
+  theme_classic()
 
+ggplot()
+```
