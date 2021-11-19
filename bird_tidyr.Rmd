@@ -29,3 +29,71 @@ species <- tbls[[1]] %>%
     mutate(alpha_code = tolower(alpha_code)) # turns everything into lowercase
 ```
 
+# Load in tables
+```{r, message = FALSE}
+pred <- read_csv('https://arcticdata.io/metacat/d1/mn/v2/object/urn%3Auuid%3A9ffec04c-7e2d-41dd-9e88-b6c2e8c4375e')
+
+nest <- read_csv('https://arcticdata.io/metacat/d1/mn/v2/object/urn%3Auuid%3A982bd2fc-4edf-4da7-96ef-0d11b853102d')
+```
+
+# Write a function that will translate species codes into common names
+```{r}
+# Table 'species' has the common names in it. 
+pred <- as.data.frame(pred)
+
+# create new col that takes species col and finds which code it matches in the species df. 
+# but I have to write a function. 
+# input should be a species code. output should be a common name from 'species.'
+code_to_common <- function(code){
+  common_name = species$common_name[which(species$alpha_code == code)]
+  return(data.frame(common_name = common_name))
+}
+code_to_common(pred$species)
+
+pred <- pred %>%
+  rename(alpha_code = species)
+
+pred_common <- left_join(pred, species, by = 'alpha_code')
+
+nest <- nest %>%
+  rename(alpha_code = species) %>%
+  subset(select = c(alpha_code, year, number_eggs_predated))
+
+nest_common <- left_join(nest, species, by = 'alpha_code')
+
+## the answer
+assign_species_name <- function(df, species) {
+  return_df <- left_join(df, species, by = c('species' = 'alpha_code'))
+  return(return_df)
+}
+```
+
+# Calculate total number of predators by year and species, and plot the result.
+```{r}
+tot_pred_yr_sp <- pred_common %>%
+  group_by(year, common_name) %>%
+  summarise(pred_count = sum(count))
+```
+
+# Calculate total number of eggs predated by year and species.
+```{r}
+tot_eggs_predated <- nest_common %>%
+  group_by(year, common_name) %>%
+  summarise(tot_predated = sum(number_eggs_predated))
+```
+
+# Calculate total number of predators by year, join to summarized egg predation table, and plot the result.
+```{r}
+tot_pred_yr <- pred %>%
+  group_by(year) %>%
+  summarise(pred_count = sum(count, na.rm = T))
+  
+merge(tot_eggs_predated, tot_pred_yr)
+left_join(tot_eggs_predated, tot_pred_yr, by = 'year')
+```
+
+
+
+
+
+

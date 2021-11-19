@@ -48,13 +48,13 @@ mysum(4,5)
 
 # Complex return values 
 ```{r}
-convert_temps <- function(fahr){
+converxt_temps <- function(fahr){
   celsius <- FtoC(fahr)
   kelvin <- celsius + 273.15
-  return(data.frame(temp = c(fahr, celsius, kelvin), unit = c('fahrenheit', 'celsius', 'kelvin')))
+  return(data.frame(temp = c(fahr, celsius, kelvin)))
 }
 # test the function
-convert_temps(32)
+convert_temps(322)
 temps.df <- data.frame(convert_temps(seq(-100, 100, 10)))
 ```
 
