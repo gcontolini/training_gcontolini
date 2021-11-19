@@ -3,9 +3,71 @@ title: "geospatial_training"
 author: "gina c"
 date: "11/19/2021"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(leaflet)
+library(scales)
+library(ggmap)
 ```
 
+# Read in and transform shapefile
+```{r}
+ak_regions <- read_sf('shapefiles/ak_regions_simp.shp') # finds all the associated files as long as they are in the same dir
+
+plot(ak_regions)
+class(ak_regions)
+head(ak_regions)
+st_crs(ak_regions) # tells you what coord system it's in. > GCS_WGS_1984
+
+# Transform data to EPGS code 3338. Transforms data from one coord system to another.
+ak_regions_3338 <- ak_regions %>%
+  st_transform(crs = 3338)
+plot(ak_regions_3338)
+
+ak_regions_3338 %>%
+  select(region)
+```
+
+# Join city and region data to calc pops per region
+```{r}
+pop <- read.csv('shapefiles/alaska_population.csv')
+# coerce an object into another data type 
+pop_4326 <- st_as_sf(pop, 
+                     coords = c('lng', 'lat'),
+                     crs = 4326) # you can't change this even if you want it different! You gotta know what it's in before you can change it. the CRS is an inherent part of the data
+
+pop_3338 <- pop_4326 %>%
+  st_transform(crs = 3338)
+
+head(pop_4326)
+
+pop_joined <- st_join(pop_3338, ak_regions_3338, join = st_within) 
+# a left join (?)
+# within because we want to know what cities are within regions. # oh but the crs need to be the same for each projections. 
+head(pop_joined)
+plot(pop_joined[['population']])
+
+pop_region_test <- pop_joined %>%
+  group_by(region) %>%
+  summarise(tot_pop = sum(population, na.rm = T)) # but pop is assigned to each individual city
+plot(pop_region) # the colors are on the points (cities?) not the region shapes.
+
+pop_region <- pop_joined %>%
+  as.data.frame() %>% # colors it by region not each city point. this drops the sticky geometry.
+  group_by(region) %>%
+  summarise(tot_pop = sum(population, na.rm = T))
+
+head(pop_region)
+
+pop_region_3338 <- left_join(ak_regions_3338, pop_region) # join by region
+
+plot(pop_region_3338)
+
+```
