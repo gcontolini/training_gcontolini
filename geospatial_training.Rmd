@@ -70,4 +70,30 @@ pop_region_3338 <- left_join(ak_regions_3338, pop_region) # join by region
 
 plot(pop_region_3338)
 
+#### another wy to gropu and summarize
+# the sf way
+pop_mgmt_3338 <- pop_region_3338 %>%
+  group_by(mgmt_area) %>%
+  summarise(tot_pop = sum(tot_pop, na.rm = T), do_union = FALSE)
+
+plot(pop_mgmt_3338)
 ```
+
+# Make some pretty maps!
+```{r}
+# create rivers
+rivers_3338 <- read_sf('shapefiles/ak_rivers_simp.shp')
+st_crs(rivers_3338)
+
+ggplot() +
+  geom_sf(data = pop_region_3338, mapping = aes(fill = tot_pop)) + # you can layer datasets. going to layer cities and rivers
+  geom_sf(data = pop_3338, mapping = aes(), size = 0.5) +
+  geom_sf(data = rivers_3338, mapping = aes(size = StrOrder), color = 'dodgerblue') +
+  scale_size(range = c(0.01, 0.2), guide = 'none') + # guide is the legend
+  theme_bw() +
+  labs(fill = 'Total population') +
+  scale_fill_continuous(low = 'khaki', high = 'firebrick', labels = comma)
+  
+```
+
+
